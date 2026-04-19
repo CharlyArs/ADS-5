@@ -2,42 +2,42 @@
 #ifndef INCLUDE_TSTACK_H_
 #define INCLUDE_TSTACK_H_
 
-template<typename T, int size>
+template<typename T, int SIZE>
 class TStack {
  private:
-  T storage[size];
+  T storage[SIZE];
   int topIndex;
 
  public:
   TStack() : topIndex(-1) {}
 
-  int getSize() const { 
-      return topIndex + 1; 
+  bool isEmpty() const {
+    return topIndex == -1;
   }
 
-  bool isEmpty() const { 
-      return topIndex == -1; 
+  bool isFull() const {
+    return topIndex == SIZE - 1;
   }
 
   void push(const T& item) {
-    if (topIndex < size - 1)
-      storage[++topIndex] = item;
-    else
+    if (isFull()) {
       throw "Full stack";
+    }
+    storage[++topIndex] = item;
   }
 
   T get() const {
-    if (topIndex >= 0)
-      return storage[topIndex];
-    else
+    if (isEmpty()) {
       throw "Empty stack";
+    }
+    return storage[topIndex];
   }
 
   void pop() {
-    if (topIndex >= 0)
-      topIndex--;
-    else
+    if (isEmpty()) {
       throw "Empty stack";
+    }
+    topIndex--;
   }
 };
 
