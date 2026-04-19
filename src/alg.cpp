@@ -1,5 +1,6 @@
 // Copyright 2026 NNTU-CS
 #include <string>
+#include <cctype>
 #include "tstack.h"
 
 int getPriority(const char op) {
@@ -16,15 +17,16 @@ std::string infx2pstfx(const std::string& inf) {
 
   for (size_t i = 0; i < inf.length(); ++i) {
     char ch = inf[i];
+    if (std::isspace(static_cast<unsigned char>(ch))) continue;
 
-    if (ch == ' ') continue;
-
-    if (ch >= '0' && ch <= '9') {
-      while (i < inf.length() && inf[i] >= '0' && inf[i] <= '9') {
+    if (std::isdigit(static_cast<unsigned char>(ch))) {
+      // Используем do-while, чтобы избежать предупреждения knownConditionTrueFalse
+      do {
         postfix += inf[i++];
-      }
+      } while (i < inf.length() &&
+               std::isdigit(static_cast<unsigned char>(inf[i])));
       postfix += ' ';
-      i--;
+      i--;  // Корректируем индекс для внешнего цикла for
     } else if (ch == '(') {
       opStack.push(ch);
     } else if (ch == ')') {
@@ -33,7 +35,7 @@ std::string infx2pstfx(const std::string& inf) {
         postfix += ' ';
         opStack.pop();
       }
-      opStack.pop();
+      if (!opStack.isEmpty()) opStack.pop();
     } else {
       int priority = getPriority(ch);
       while (!opStack.isEmpty() && getPriority(opStack.get()) >= priority) {
@@ -59,14 +61,16 @@ std::string infx2pstfx(const std::string& inf) {
 
 int eval(const std::string& pref) {
   TStack<int, 100> valStack;
-  for (size_t i = 0; i < pref.length(); ++i) {
-    if (pref[i] == ' ') continue;
 
-    if (pref[i] >= '0' && pref[i] <= '9') {
+  for (size_t i = 0; i < pref.length(); ++i) {
+    if (std::isspace(static_cast<unsigned char>(pref[i]))) continue;
+
+    if (std::isdigit(static_cast<unsigned char>(pref[i]))) {
       std::string num;
-      while (i < pref.length() && pref[i] >= '0' && pref[i] <= '9') {
+      do {
         num += pref[i++];
-      }
+      } while (i < pref.length() &&
+               std::isdigit(static_cast<unsigned char>(pref[i])));
       valStack.push(std::stoi(num));
       i--;
     } else {
