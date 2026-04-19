@@ -20,13 +20,13 @@ std::string infx2pstfx(const std::string& inf) {
     if (std::isspace(static_cast<unsigned char>(ch))) continue;
 
     if (std::isdigit(static_cast<unsigned char>(ch))) {
-      // Используем do-while, чтобы избежать предупреждения knownConditionTrueFalse
+      // do-while avoids knownConditionTrueFalse in cppcheck
       do {
         postfix += inf[i++];
       } while (i < inf.length() &&
                std::isdigit(static_cast<unsigned char>(inf[i])));
       postfix += ' ';
-      i--;  // Корректируем индекс для внешнего цикла for
+      i--;
     } else if (ch == '(') {
       opStack.push(ch);
     } else if (ch == ')') {
